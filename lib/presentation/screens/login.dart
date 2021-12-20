@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_challenge/core/constants/route_constants.dart';
-import 'package:flutter_challenge/core/validators/validator_mixin.dart';
-import 'package:flutter_challenge/presentation/widgets/form_label.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../core/constants/route_constants.dart';
+import '../../core/validators/validator_mixin.dart';
+import '../widgets/form_label.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -104,9 +106,11 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const Seperator(),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formkey.currentState!.validate()) {
                     _formkey.currentState!.save();
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setBool("isLoggedIn", true);
                     Navigator.pushReplacementNamed(context, homeScreenRoute);
                   }
                 },

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_challenge/core/constants/route_constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/constants/route_constants.dart';
 import '../../data/models/slider_model.dart';
 
 class WalkThroughScreen extends StatefulWidget {
@@ -93,8 +94,10 @@ class _WalkThroughScreenState extends State<WalkThroughScreen> {
                   child: Text(_currentIndex == _slides.length - 1
                       ? "Continue"
                       : "Next"),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_currentIndex == _slides.length - 1) {
+                      final prefs = await SharedPreferences.getInstance();
+                      prefs.setBool("hasOnboarded", true);
                       Navigator.pushReplacementNamed(context, loginScreenRoute);
                     } else {
                       _controller.nextPage(
