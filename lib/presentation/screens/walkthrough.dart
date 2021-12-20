@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_challenge/core/constants/route_constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../data/models/slider_model.dart';
@@ -32,76 +33,81 @@ class _WalkThroughScreenState extends State<WalkThroughScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 300.0,
-            width: double.infinity,
-            child: PageView.builder(
-              scrollDirection: Axis.horizontal,
-              controller: _controller,
-              onPageChanged: (value) {
-                setState(() {
-                  _currentIndex = value;
-                });
-              },
-              itemCount: _slides.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: SvgPicture.asset(_slides[index].getImage()!),
-                );
-              },
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 300.0,
+              width: double.infinity,
+              child: PageView.builder(
+                scrollDirection: Axis.horizontal,
+                controller: _controller,
+                onPageChanged: (value) {
+                  setState(() {
+                    _currentIndex = value;
+                  });
+                },
+                itemCount: _slides.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: SvgPicture.asset(_slides[index].getImage()!),
+                  );
+                },
+              ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              _slides.length,
-              (index) => buildDot(index, context),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                _slides.length,
+                (index) => buildDot(index, context),
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 20.0,
-          ),
-          Row(
-            mainAxisAlignment: _currentIndex != 0
-                ? MainAxisAlignment.spaceBetween
-                : MainAxisAlignment.center,
-            children: [
-              if (_currentIndex != 0)
+            const SizedBox(
+              height: 20.0,
+            ),
+            Row(
+              mainAxisAlignment: _currentIndex != 0
+                  ? MainAxisAlignment.spaceBetween
+                  : MainAxisAlignment.center,
+              children: [
+                if (_currentIndex != 0)
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                    ),
+                    child: const Text("Previous"),
+                    onPressed: () {
+                      _controller.previousPage(
+                        duration: const Duration(milliseconds: 100),
+                        curve: Curves.bounceIn,
+                      );
+                    },
+                  ),
                 TextButton(
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.transparent,
                   ),
-                  child: const Text("Previous"),
+                  child: Text(_currentIndex == _slides.length - 1
+                      ? "Continue"
+                      : "Next"),
                   onPressed: () {
-                    _controller.previousPage(
-                      duration: const Duration(milliseconds: 100),
-                      curve: Curves.bounceIn,
-                    );
+                    if (_currentIndex == _slides.length - 1) {
+                      Navigator.pushReplacementNamed(context, loginScreenRoute);
+                    } else {
+                      _controller.nextPage(
+                        duration: const Duration(milliseconds: 100),
+                        curve: Curves.bounceIn,
+                      );
+                    }
                   },
                 ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                ),
-                child: Text(
-                    _currentIndex == _slides.length - 1 ? "Continue" : "Next"),
-                onPressed: () {
-                  if (_currentIndex == _slides.length - 1) {
-                  } else {
-                    _controller.nextPage(
-                      duration: const Duration(milliseconds: 100),
-                      curve: Curves.bounceIn,
-                    );
-                  }
-                },
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
