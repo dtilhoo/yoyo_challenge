@@ -28,7 +28,12 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          widget.content.title ?? '',
+        ),
+      ),
       body: Stack(children: [
         WebView(
           initialUrl: widget.content.link,
