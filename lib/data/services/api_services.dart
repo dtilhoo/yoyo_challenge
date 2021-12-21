@@ -18,7 +18,7 @@ class ApiService {
         String data = response.body;
         String validXml = data.replaceFirst('ï»¿', '');
         xml2Json.parse(validXml);
-        var jsonString = xml2Json.toBadgerfish();
+        String jsonString = xml2Json.toBadgerfish();
         return articleFeedFromJson(jsonString);
       } else {
         throw response.statusCode;

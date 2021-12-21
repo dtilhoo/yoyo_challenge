@@ -96,7 +96,7 @@ class Item {
         title: json["title"]["\$"] ?? '',
         description: json["description"]["\$"] ?? '',
         link: json["link"]["\$"] ?? '',
-        enclosure: json["enclosure"]["\$"] == null
+        enclosure: json["enclosure"] == null
             ? null
             : Enclosure.fromJson(json["enclosure"]),
       );

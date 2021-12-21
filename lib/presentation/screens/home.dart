@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_challenge/data/models/article_feed.dart';
 import 'package:flutter_challenge/data/services/api_services.dart';
+import 'package:flutter_challenge/presentation/widgets/article_widget.dart';
+import 'package:flutter_challenge/presentation/widgets/retry_fetch.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -9,18 +11,33 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-List<Item> data = [];
+List<Item> _data = [];
+bool _isLoading = false;
+bool _hasError = false;
+String _errorMessage = '';
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
-    final response = ApiService.getArticleFeeds();
-    response.then((value) {
+    _getArticleFeed();
+    super.initState();
+  }
+
+  Future _getArticleFeed() async {
+    _isLoading = true;
+    await ApiService.getArticleFeeds().then((value) {
       setState(() {
-        data = value.rss!.channel!.item!;
+        _data = value.rss!.channel!.item!;
+        _isLoading = false;
+        _hasError = false;
+      });
+    }).catchError((err) {
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+        _errorMessage = err.toString();
       });
     });
-    super.initState();
   }
 
   @override
@@ -30,63 +47,26 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         title: const Text("Yoyo challenge"),
       ),
-      body: ListView.separated(
-        separatorBuilder: (context, index) => const Divider(),
-        itemCount: data.length,
-        itemBuilder: (context, index) {
-          return ArticleWidget(
-            imageUrl: data[index].enclosure?.url ??
-                'https://www.thedesignwork.com/wp-content/uploads/2011/10/Random-Pictures-of-Conceptual-and-Creative-Ideas-02.jpg',
-            title: data[index].title ?? 'No title',
-            description: data[index].description ?? 'No description',
-          );
-        },
-      ),
-    );
-  }
-}
-
-class ArticleWidget extends StatelessWidget {
-  const ArticleWidget({
-    Key? key,
-    required this.title,
-    required this.imageUrl,
-    required this.description,
-  }) : super(key: key);
-
-  final String title;
-  final String imageUrl;
-  final String description;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey[100],
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Center(
-              child: Image.network(
-                imageUrl,
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(description),
-          ],
-        ),
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _hasError
+              ? ErrorMessage(
+                  errorMessage: _errorMessage, onRetryPressed: _getArticleFeed)
+              : RefreshIndicator(
+                  onRefresh: _getArticleFeed,
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => const Divider(),
+                    itemCount: _data.length,
+                    itemBuilder: (context, index) {
+                      return ArticleWidget(
+                        imageUrl: _data[index].enclosure?.url ?? '',
+                        title: _data[index].title ?? 'No title',
+                        description:
+                            _data[index].description ?? 'No description',
+                      );
+                    },
+                  ),
+                ),
     );
   }
 }
