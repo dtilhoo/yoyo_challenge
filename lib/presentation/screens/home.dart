@@ -59,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemCount: _data.length,
                     itemBuilder: (context, index) {
                       return ArticleWidget(
+                        content: _data[index],
                         imageUrl: _data[index].enclosure?.url ?? '',
                         title: _data[index].title ?? 'No title',
                         description:
