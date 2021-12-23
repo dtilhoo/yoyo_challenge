@@ -31,7 +31,7 @@ class DBProvider {
           'title TEXT,'
           'description TEXT,'
           'link TEXT,'
-          'enclosure TEXT'
+          'imageUrl TEXT'
           ')');
     });
   }

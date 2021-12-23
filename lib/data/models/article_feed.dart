@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter_challenge/data/services/db_provider.dart';
+import 'package:flutter_challenge/data/provider/db_provider.dart';
 
 ArticleFeed articleFeedFromJson(String str) {
   var jsonData = ArticleFeed.fromJson(json.decode(str));
@@ -87,56 +87,32 @@ class Item {
     this.title,
     this.description,
     this.link,
-    this.enclosure,
+    this.imageUrl,
   });
 
   String? title;
   String? description;
   String? link;
-  Enclosure? enclosure;
+  String? imageUrl;
 
   factory Item.fromJson(Map<String, dynamic> json) => Item(
         title: json["title"]["\$"] ?? '',
         description: json["description"]["\$"] ?? '',
         link: json["link"]["\$"] ?? '',
-        enclosure: json["enclosure"] == null
-            ? null
-            : Enclosure.fromJson(json["enclosure"]),
+        imageUrl: json["enclosure"]["@url"] ?? '',
       );
 
   static Item fromSqlJson(Map<String, dynamic> json) => Item(
         title: json["title"],
         description: json["description"],
         link: json["link"],
-        enclosure: null,
+        imageUrl: json["imageUrl"],
       );
 
   Map<String, dynamic> toJson() => {
         "title": title ?? '',
         "description": description ?? '',
         "link": link ?? '',
-        "enclosure": enclosure == null ? null : enclosure!.toJson(),
-      };
-}
-
-class Enclosure {
-  Enclosure({
-    this.url,
-    this.length,
-    this.type,
-    this.selfClosing,
-  });
-
-  String? url;
-  String? length;
-  Type? type;
-  String? selfClosing;
-
-  factory Enclosure.fromJson(Map<String, dynamic> json) => Enclosure(
-        url: json["@url"] ?? '',
-      );
-
-  Map<String, dynamic> toJson() => {
-        "@url": url ?? '',
+        "imageUrl": imageUrl ?? '',
       };
 }

@@ -34,45 +34,47 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
           widget.content.title ?? '',
         ),
       ),
-      body: Stack(children: [
-        WebView(
-          initialUrl: widget.content.link,
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebResourceError: (error) {
-            setState(() {
-              _isLoading = false;
-              _hasError = true;
-            });
-          },
-          onPageFinished: (_) {
-            setState(() {
-              _isLoading = false;
-            });
-          },
-        ),
-        _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : _hasError
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(
-                          Icons.error_outline,
-                          size: 32.0,
-                          color: Colors.red,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text('An error occured. Please try again later.')
-                      ],
-                    ),
-                  )
-                : Stack(),
-      ]),
+      body: Stack(
+        children: [
+          WebView(
+            initialUrl: widget.content.link,
+            javascriptMode: JavascriptMode.unrestricted,
+            onWebResourceError: (error) {
+              setState(() {
+                _isLoading = false;
+                _hasError = true;
+              });
+            },
+            onPageFinished: (_) {
+              setState(() {
+                _isLoading = false;
+              });
+            },
+          ),
+          _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : _hasError
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(
+                            Icons.error_outline,
+                            size: 32.0,
+                            color: Colors.red,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text('An error occured. Please try again later.')
+                        ],
+                      ),
+                    )
+                  : Stack(),
+        ],
+      ),
     );
   }
 }

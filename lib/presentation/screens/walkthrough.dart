@@ -39,7 +39,6 @@ class _WalkThroughScreenState extends State<WalkThroughScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
                   height: 300.0,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/models/article_feed.dart';
 import '../../data/services/api_services.dart';
-import '../../data/services/db_provider.dart';
+import '../../data/provider/db_provider.dart';
 import '../widgets/article_widget.dart';
 import '../widgets/retry_fetch.dart';
 
@@ -68,7 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _hasError
               ? ErrorMessage(
-                  errorMessage: _errorMessage, onRetryPressed: _getArticleFeed)
+                  errorMessage: _errorMessage,
+                  onRetryPressed: _getArticleFeed,
+                )
               : RefreshIndicator(
                   onRefresh: _getArticleFeed,
                   child: ListView.separated(
@@ -77,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       return ArticleWidget(
                         content: _data[index],
-                        imageUrl: _data[index].enclosure?.url ?? '',
+                        imageUrl: _data[index].imageUrl ?? '',
                         title: _data[index].title ?? 'No title',
                         description:
                             _data[index].description ?? 'No description',
