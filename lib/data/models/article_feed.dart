@@ -1,11 +1,15 @@
-// To parse this JSON data, do
-//
-//     final articleFeed = articleFeedFromJson(jsonString);
-
 import 'dart:convert';
 
-ArticleFeed articleFeedFromJson(String str) =>
-    ArticleFeed.fromJson(json.decode(str));
+import 'package:flutter_challenge/data/services/db_provider.dart';
+
+ArticleFeed articleFeedFromJson(String str) {
+  var jsonData = ArticleFeed.fromJson(json.decode(str));
+  DBProvider.db.deleteAllArticles();
+  (jsonData.rss!.channel!.item as List<Item>).map((article) {
+    DBProvider.db.createArticle(article);
+  }).toList();
+  return jsonData;
+}
 
 String articleFeedToJson(ArticleFeed data) => json.encode(data.toJson());
 
@@ -89,7 +93,6 @@ class Item {
   String? title;
   String? description;
   String? link;
-  String? pubDate;
   Enclosure? enclosure;
 
   factory Item.fromJson(Map<String, dynamic> json) => Item(
@@ -101,11 +104,17 @@ class Item {
             : Enclosure.fromJson(json["enclosure"]),
       );
 
+  static Item fromSqlJson(Map<String, dynamic> json) => Item(
+        title: json["title"],
+        description: json["description"],
+        link: json["link"],
+        enclosure: null,
+      );
+
   Map<String, dynamic> toJson() => {
         "title": title ?? '',
         "description": description ?? '',
         "link": link ?? '',
-        "pubDate": pubDate ?? '',
         "enclosure": enclosure == null ? null : enclosure!.toJson(),
       };
 }

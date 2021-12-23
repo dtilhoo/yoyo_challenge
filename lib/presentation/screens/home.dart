@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_challenge/data/models/article_feed.dart';
-import 'package:flutter_challenge/data/services/api_services.dart';
-import 'package:flutter_challenge/presentation/widgets/article_widget.dart';
-import 'package:flutter_challenge/presentation/widgets/retry_fetch.dart';
+
+import '../../data/models/article_feed.dart';
+import '../../data/services/api_services.dart';
+import '../../data/services/db_provider.dart';
+import '../widgets/article_widget.dart';
+import '../widgets/retry_fetch.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 List<Item> _data = [];
+List<Item> _cachedData = [];
 bool _isLoading = false;
 bool _hasError = false;
 String _errorMessage = '';
@@ -19,24 +22,38 @@ String _errorMessage = '';
 class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
-    _getArticleFeed();
+    _getCachedFeed();
     super.initState();
   }
 
   Future _getArticleFeed() async {
     _isLoading = true;
-    await ApiService.getArticleFeeds().then((value) {
+    await ApiService.getArticleFeeds().then((value) async {
       setState(() {
         _data = value.rss!.channel!.item!;
         _isLoading = false;
         _hasError = false;
       });
     }).catchError((err) {
-      setState(() {
-        _isLoading = false;
-        _hasError = true;
-        _errorMessage = err.toString();
-      });
+      if (_cachedData.isNotEmpty) {
+        setState(() {
+          _isLoading = false;
+          _data = _cachedData;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+          _errorMessage = err.toString();
+        });
+      }
+    });
+  }
+
+  Future _getCachedFeed() async {
+    await DBProvider.db.getAllArticles().then((value) {
+      _cachedData = value;
+      _getArticleFeed();
     });
   }
 

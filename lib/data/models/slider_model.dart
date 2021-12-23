@@ -28,14 +28,17 @@ List<SliderModel> getSlides() {
   sliderModel.setImage("assets/slider1.svg");
   sliderModel.setTitle("Welcome to Yoyo app");
   slides.add(sliderModel);
+  sliderModel = SliderModel();
 
   sliderModel.setImage("assets/slider2.svg");
-  sliderModel.setTitle("This app contains financial news");
+  sliderModel.setTitle("This app contains latest news");
   slides.add(sliderModel);
+  sliderModel = SliderModel();
 
   sliderModel.setImage("assets/slider3.svg");
   sliderModel.setTitle("Continue to create your account");
   slides.add(sliderModel);
+  sliderModel = SliderModel();
 
   return slides;
 }

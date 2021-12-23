@@ -24,7 +24,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 
   bool _isLoading = true;
-
+  bool _hasError = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,6 +38,12 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         WebView(
           initialUrl: widget.content.link,
           javascriptMode: JavascriptMode.unrestricted,
+          onWebResourceError: (error) {
+            setState(() {
+              _isLoading = false;
+              _hasError = true;
+            });
+          },
           onPageFinished: (_) {
             setState(() {
               _isLoading = false;
@@ -48,7 +54,24 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
             ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : Stack(),
+            : _hasError
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(
+                          Icons.error_outline,
+                          size: 32.0,
+                          color: Colors.red,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text('An error occured. Please try again later.')
+                      ],
+                    ),
+                  )
+                : Stack(),
       ]),
     );
   }

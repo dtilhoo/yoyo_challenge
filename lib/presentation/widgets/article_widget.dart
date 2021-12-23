@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_challenge/data/models/article_feed.dart';
-import 'package:flutter_challenge/presentation/screens/article_details.dart';
+
+import '../../data/models/article_feed.dart';
+import '../screens/article_details.dart';
 
 class ArticleWidget extends StatelessWidget {
   const ArticleWidget({
@@ -42,13 +43,24 @@ class ArticleWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                height: 10,
+                height: 10.0,
               ),
               Center(
                 child: Image.network(
                   imageUrl,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.hide_image_outlined);
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.hide_image_outlined),
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
                   },
                 ),
               ),
