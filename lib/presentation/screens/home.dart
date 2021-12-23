@@ -27,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future _getArticleFeed() async {
-    _isLoading = true;
     await ApiService.getArticleFeeds().then((value) async {
       setState(() {
         _data = value.rss!.channel!.item!;
@@ -37,23 +36,32 @@ class _HomeScreenState extends State<HomeScreen> {
     }).catchError((err) {
       if (_cachedData.isNotEmpty) {
         setState(() {
-          _isLoading = false;
           _data = _cachedData;
+          _isLoading = false;
         });
       } else {
         setState(() {
           _isLoading = false;
-          _hasError = true;
           _errorMessage = err.toString();
+          _hasError = true;
         });
       }
     });
   }
 
   Future _getCachedFeed() async {
+    setState(() {
+      _isLoading = true;
+    });
     await DBProvider.db.getAllArticles().then((value) {
       _cachedData = value;
       _getArticleFeed();
+    }).catchError((err) {
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+        _errorMessage = err.toString();
+      });
     });
   }
 
@@ -69,10 +77,10 @@ class _HomeScreenState extends State<HomeScreen> {
           : _hasError
               ? ErrorMessage(
                   errorMessage: _errorMessage,
-                  onRetryPressed: _getArticleFeed,
+                  onRetryPressed: _getCachedFeed,
                 )
               : RefreshIndicator(
-                  onRefresh: _getArticleFeed,
+                  onRefresh: _getCachedFeed,
                   child: ListView.separated(
                     separatorBuilder: (context, index) => const Divider(),
                     itemCount: _data.length,
