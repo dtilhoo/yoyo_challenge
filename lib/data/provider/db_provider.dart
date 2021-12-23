@@ -10,6 +10,8 @@ class DBProvider {
   static Database? _database;
   static final DBProvider db = DBProvider._();
 
+  static const String _tableName = 'Article';
+
   DBProvider._();
 
   Future<Database> get database async {
@@ -26,8 +28,8 @@ class DBProvider {
 
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
-      await db.execute('CREATE TABLE Article('
-          'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+      await db.execute('CREATE TABLE $_tableName('
+          '_id INTEGER PRIMARY KEY AUTOINCREMENT,'
           'title TEXT,'
           'description TEXT,'
           'link TEXT,'
@@ -38,21 +40,21 @@ class DBProvider {
 
   createArticle(Item newArticle) async {
     final db = await database;
-    final res = await db.insert('Article', newArticle.toJson());
+    final res = await db.insert(_tableName, newArticle.toJson());
 
     return res;
   }
 
   Future<int> deleteAllArticles() async {
     final db = await database;
-    final res = await db.rawDelete('DELETE FROM Article');
+    final res = await db.rawDelete('DELETE FROM $_tableName');
 
     return res;
   }
 
   Future<List<Item>> getAllArticles() async {
     final db = await database;
-    final res = await db.query('Article');
+    final res = await db.query(_tableName);
 
     List<Item> list =
         res.isNotEmpty ? res.map((c) => Item.fromSqlJson(c)).toList() : [];
